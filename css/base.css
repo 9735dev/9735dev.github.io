@@ -11,3 +11,7 @@ img.logo {
   width: 100px;
 }
 
+a {
+  text-decoration: none;
+}
+
