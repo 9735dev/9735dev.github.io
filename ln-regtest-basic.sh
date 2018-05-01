@@ -28,17 +28,17 @@ $LIGHTNINGD --network=regtest --daemon --port=9736 --lightning-dir=$LN2 --bitcoi
 $LIGHTNINGD --network=regtest --daemon --port=9737 --lightning-dir=$LN3 --bitcoin-datadir=$BN1 --log-file=log.txt --log-level=debug --bitcoin-cli=$BITCOIN_CLI --bitcoind-poll=1s
 
 # give the lightning nodes some coins
-LN1_DEPOSIT_ADDR=$($LIGHTNING_CLI --lightning-dir=$LN1 newaddr | /usr/bin/env python3 -c 'import json, sys; data=json.load(sys.stdin); print(data["address"]);');
-LN2_DEPOSIT_ADDR=$($LIGHTNING_CLI --lightning-dir=$LN2 newaddr | /usr/bin/env python3 -c 'import json, sys; data=json.load(sys.stdin); print(data["address"]);');
-LN3_DEPOSIT_ADDR=$($LIGHTNING_CLI --lightning-dir=$LN3 newaddr | /usr/bin/env python3 -c 'import json, sys; data=json.load(sys.stdin); print(data["address"]);');
+LN1_DEPOSIT_ADDR=$($LIGHTNING_CLI --lightning-dir=$LN1 newaddr | jq -r .address);
+LN2_DEPOSIT_ADDR=$($LIGHTNING_CLI --lightning-dir=$LN2 newaddr | jq -r .address);
+LN3_DEPOSIT_ADDR=$($LIGHTNING_CLI --lightning-dir=$LN3 newaddr | jq -r .address);
 $BITCOIN_CLI -regtest -datadir=$BN1 sendmany '' "{\"$LN1_DEPOSIT_ADDR\":1, \"$LN2_DEPOSIT_ADDR\":1, \"$LN3_DEPOSIT_ADDR\":1}" > /dev/null 2>&1
 $BITCOIN_CLI -regtest -datadir=$BN1 generate 6 > /dev/null 2>&1
 sleep 3 # pause to let the lightning nodes catch up
 
 # show some info that is useful for running ad-hoc commands
-LN1_NODE_ID=$($LIGHTNING_CLI --lightning-dir=$LN1 getinfo | /usr/bin/env python3 -c 'import json, sys; data=json.load(sys.stdin); print(data["id"]);')
-LN2_NODE_ID=$($LIGHTNING_CLI --lightning-dir=$LN2 getinfo | /usr/bin/env python3 -c 'import json, sys; data=json.load(sys.stdin); print(data["id"]);')
-LN3_NODE_ID=$($LIGHTNING_CLI --lightning-dir=$LN3 getinfo | /usr/bin/env python3 -c 'import json, sys; data=json.load(sys.stdin); print(data["id"]);')
+LN1_NODE_ID=$($LIGHTNING_CLI --lightning-dir=$LN1 getinfo | jq -r .id)
+LN2_NODE_ID=$($LIGHTNING_CLI --lightning-dir=$LN2 getinfo | jq -r .id)
+LN3_NODE_ID=$($LIGHTNING_CLI --lightning-dir=$LN3 getinfo | jq -r .id)
 
 $LIGHTNING_CLI --lightning-dir=$LN1 getinfo
 $LIGHTNING_CLI --lightning-dir=$LN2 getinfo
